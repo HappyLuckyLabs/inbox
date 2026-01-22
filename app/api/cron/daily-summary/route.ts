@@ -114,14 +114,14 @@ async function generateDailySummaryForUser(userId: string, userName: string): Pr
 
   // Generate summary
   const messageSummaries = messages.slice(0, 20).map(m => ({
-    from: m.fromContact.name,
+    from: m.fromContact?.name || m.from || 'Unknown',
     subject: m.subject || undefined,
     body: m.body,
     priority: m.priority,
   }));
 
   const topicSummaries = topics.map(t => ({
-    topic: t.topic,
+    topic: t.name,
     importance: t.importance,
     messageCount: t.messageCount,
   }));
