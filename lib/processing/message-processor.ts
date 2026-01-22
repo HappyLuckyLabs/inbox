@@ -247,20 +247,19 @@ async function handleExtractTopics(job: any): Promise<void> {
   if (recentMessages.length < 2) return; // Need conversation context
 
   const messagesForAnalysis = recentMessages.map(m => ({
-    from: m.fromContact.name,
+    from: m.fromContact?.name || 'Unknown',
     body: m.body,
-    subject: m.subject,
+    subject: m.subject || undefined,
   }));
 
   const topic = await extractConversationTopic(messagesForAnalysis);
 
-  if (topic && topic.confidence > 0.6) {
+  if (topic && topic.importance >= 6) {
     // Check if topic already exists
     const existingTopic = await prisma.conversationTopic.findFirst({
       where: {
         userId,
-        topic: topic.topic,
-        isActive: true,
+        name: topic.name,
       },
     });
 
@@ -269,7 +268,7 @@ async function handleExtractTopics(job: any): Promise<void> {
       await prisma.conversationTopic.update({
         where: { id: existingTopic.id },
         data: {
-          lastMentioned: new Date(),
+          lastActivityAt: new Date(),
           importance: Math.max(existingTopic.importance, topic.importance),
           messageCount: { increment: 1 },
         },
@@ -279,16 +278,16 @@ async function handleExtractTopics(job: any): Promise<void> {
       await prisma.conversationTopic.create({
         data: {
           userId,
-          topic: topic.topic,
+          name: topic.name,
+          description: topic.description,
           category: topic.category,
           importance: topic.importance,
-          relatedContactIds: JSON.stringify([data.contactId]),
-          keywords: JSON.stringify(topic.keywords),
-          actionItems: JSON.stringify(topic.actionItems),
-          firstMentioned: new Date(),
-          lastMentioned: new Date(),
+          participantIds: JSON.stringify([data.contactId]),
+          messageIds: JSON.stringify([data.messageId]),
+          platforms: JSON.stringify([data.platform]),
+          lastActivityAt: new Date(),
+          firstSeenAt: new Date(),
           messageCount: 1,
-          isActive: true,
         },
       });
     }

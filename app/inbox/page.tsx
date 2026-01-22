@@ -1,40 +1,23 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { MessageList } from '@/components/inbox/message-list';
 import { NotificationSidebar } from '@/components/inbox/notification-sidebar';
 import { SmartNotificationContainer } from '@/components/inbox/smart-notification';
-import { mockMessages } from '@/lib/mock-data';
+import { mockMessages, MockMessage } from '@/lib/mock-data';
 import { Button } from '@/components/ui/button';
 import { Mail, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 
-interface Message {
-  id: string;
-  platform: string;
-  from: {
-    name: string;
-    email: string;
-    avatar?: string;
-  };
-  subject?: string;
-  snippet: string;
-  body: string;
-  priority: number;
-  isRead: boolean;
-  createdAt: Date;
-  receivedAt: Date;
-}
-
-export default function InboxPage() {
+function InboxContent() {
   const searchParams = useSearchParams();
-  const [messages, setMessages] = useState<Message[]>(mockMessages);
+  const [messages, setMessages] = useState<MockMessage[]>(mockMessages);
   const [loading, setLoading] = useState(false);
   const [gmailConnected, setGmailConnected] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
   const [notificationType, setNotificationType] = useState<'success' | 'error'>('success');
   const [notificationMessage, setNotificationMessage] = useState('');
-  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
+  const [selectedMessage, setSelectedMessage] = useState<MockMessage | null>(null);
   const [smartNotifications, setSmartNotifications] = useState([
     {
       id: '1',
@@ -99,7 +82,7 @@ export default function InboxPage() {
       }
 
       if (data.success && data.messages.length > 0) {
-        const hasGmail = data.messages.some((m: Message) => m.platform === 'gmail');
+        const hasGmail = data.messages.some((m: MockMessage) => m.platform === 'gmail');
         setGmailConnected(hasGmail);
 
         // Mix real messages with mock messages
@@ -367,6 +350,14 @@ export default function InboxPage() {
         </>
       )}
     </>
+  );
+}
+
+export default function InboxPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
+      <InboxContent />
+    </Suspense>
   );
 }
 

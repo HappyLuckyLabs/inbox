@@ -78,11 +78,9 @@ export async function generateAndSaveEmbedding(
       create: {
         messageId,
         embedding: JSON.stringify(result.embedding),
-        model: result.model,
       },
       update: {
         embedding: JSON.stringify(result.embedding),
-        model: result.model,
       },
     });
 

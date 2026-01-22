@@ -24,6 +24,7 @@ export interface MockMessage {
   sentiment: 'positive' | 'neutral' | 'negative';
   category: string;
   createdAt: Date;
+  receivedAt: Date;
   conversationId: string;
 }
 
@@ -154,6 +155,7 @@ export function generateMockMessages(contacts: MockContact[], count: number = 50
       sentiment: priority > 70 ? 'positive' : priority < 30 ? 'negative' : 'neutral',
       category: categories[Math.floor(Math.random() * categories.length)],
       createdAt,
+      receivedAt: createdAt,
       conversationId: `conv-${faker.string.alphanumeric(12)}`
     });
   }

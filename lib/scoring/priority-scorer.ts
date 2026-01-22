@@ -54,14 +54,14 @@ export async function calculatePriorityScore(context: MessageContext): Promise<S
       prisma.userPreference.findUnique({
         where: { userId: context.userId },
       }),
-      prisma.contactImportance.findUnique({
+      context.fromContactId ? prisma.contactImportance.findUnique({
         where: {
           userId_contactId: {
             userId: context.userId,
             contactId: context.fromContactId,
           },
         },
-      }),
+      }) : null,
     ]);
 
     // Factor 1: Contact Importance (weight: 30%)
@@ -178,7 +178,7 @@ export async function calculatePriorityScore(context: MessageContext): Promise<S
 
     // Factor 6: AI-Learned Patterns (weight: 5%)
     // Use cached AI-learned patterns if available
-    if (prefs?.senderPreferences) {
+    if (prefs?.senderPreferences && context.fromContactId) {
       try {
         const senderPrefs = JSON.parse(prefs.senderPreferences);
         const senderWeight = senderPrefs[context.fromContactId];
@@ -231,7 +231,7 @@ export async function recalculatePriority(messageId: string): Promise<number> {
 
   const result = await calculatePriorityScore({
     userId: message.userId,
-    fromContactId: message.fromContactId,
+    fromContactId: message.fromContactId || undefined,
     platform: message.platform,
     subject: message.subject || undefined,
     body: message.body,

@@ -32,18 +32,31 @@ export async function POST(request: NextRequest) {
     const formattedMessages = messages.map(msg => ({
       id: msg.id,
       platform: msg.platform,
+      platformMessageId: msg.externalId || msg.id,
       from: {
         name: msg.fromName || msg.from || 'Unknown',
         email: msg.from || '',
         avatar: undefined,
+        platformId: msg.from || '',
+        platform: msg.platform,
+      },
+      to: {
+        name: user.name || 'You',
+        email: user.email,
+        avatar: undefined,
+        platformId: user.email,
+        platform: msg.platform,
       },
       subject: msg.subject || undefined,
       snippet: msg.snippet || '',
       body: msg.body,
       priority: msg.priority,
       isRead: msg.isRead,
+      sentiment: (msg.priority > 70 ? 'positive' : msg.priority < 30 ? 'negative' : 'neutral') as 'positive' | 'neutral' | 'negative',
+      category: 'Uncategorized',
       createdAt: msg.createdAt,
       receivedAt: msg.receivedAt || msg.createdAt,
+      conversationId: msg.threadId || msg.id,
     }));
 
     return NextResponse.json({ success: true, messages: formattedMessages });

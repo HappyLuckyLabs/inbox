@@ -48,7 +48,7 @@ export async function trackInteraction(params: TrackInteractionParams): Promise<
       await markMessageAsRead(messageId);
     }
 
-    if (eventType.startsWith('priority_') && messageId) {
+    if (eventType.startsWith('priority_') && messageId && (eventType === 'priority_increased' || eventType === 'priority_decreased')) {
       await handlePriorityOverride(userId, messageId, eventType);
     }
   } catch (error) {
@@ -151,18 +151,20 @@ async function handlePriorityOverride(
     }
 
     // Update contact importance
-    const importance = await prisma.contactImportance.findUnique({
-      where: { userId_contactId: { userId, contactId: message.fromContactId } },
-    });
-
-    if (importance) {
-      const delta = eventType === 'priority_increased' ? 0.3 : -0.3;
-      await prisma.contactImportance.update({
-        where: { id: importance.id },
-        data: {
-          importanceScore: Math.max(0, Math.min(10, importance.importanceScore + delta)),
-        },
+    if (message.fromContactId) {
+      const importance = await prisma.contactImportance.findUnique({
+        where: { userId_contactId: { userId, contactId: message.fromContactId } },
       });
+
+      if (importance) {
+        const delta = eventType === 'priority_increased' ? 0.3 : -0.3;
+        await prisma.contactImportance.update({
+          where: { id: importance.id },
+          data: {
+            importanceScore: Math.max(0, Math.min(10, importance.importanceScore + delta)),
+          },
+        });
+      }
     }
   } catch (error) {
     console.error('Error handling priority override:', error);

@@ -97,7 +97,7 @@ export class PreferenceLearner {
     // Boost importance of contacts whose messages are read quickly
     for (const messageId of quickReads) {
       const message = messages.find(m => m.id === messageId);
-      if (message) {
+      if (message && message.fromContactId) {
         await this.updateContactImportance(message.fromContactId, 0.2);
       }
     }
