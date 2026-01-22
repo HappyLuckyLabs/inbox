@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
       where: { userId: user.id },
       orderBy: [
         { importance: 'desc' },
-        { lastMentioned: 'desc' },
+        { lastActivityAt: 'desc' },
       ],
     });
 

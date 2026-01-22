@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     const todos = await extractTodos(
       message.body,
       message.subject || undefined,
-      message.fromContact.name
+      message.fromContact?.name || message.from || 'Unknown'
     );
 
     // Fallback to regex if API fails

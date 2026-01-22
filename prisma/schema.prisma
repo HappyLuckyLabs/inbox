@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,105 +8,89 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  name          String?
-  password      String
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  messages      Message[]
-  contacts      Contact[]
-  platforms     ConnectedPlatform[]
-  preferences   UserPreference?
-  goals         UserGoal[]
-  topics        ConversationTopic[]
-  todos         TodoItem[]
-  interactions  UserInteraction[]
-  summaries     DailySummary[]
+  id           String              @id @default(cuid())
+  email        String              @unique
+  name         String?
+  password     String
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  platforms    ConnectedPlatform[]
+  contacts     Contact[]
+  topics       ConversationTopic[]
+  summaries    DailySummary[]
+  messages     Message[]
+  todos        TodoItem[]
+  goals        UserGoal[]
+  interactions UserInteraction[]
+  preferences  UserPreference?
 }
 
 model ConnectedPlatform {
-  id            String    @id @default(cuid())
-  userId        String
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  platform      String    // gmail, outlook, slack, linkedin, whatsapp, instagram
-  accountId     String?   // platform-specific account ID
-  accountName   String?   // display name on platform
-  platformUserId String?  // User ID from the platform
-  platformUsername String? // Username/email on platform
-  accessToken   String?   // OAuth token (encrypted)
-  refreshToken  String?   // OAuth refresh token (encrypted)
-  expiresAt     DateTime? // Token expiration
-  isActive      Boolean   @default(true)
-
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id               String    @id @default(cuid())
+  userId           String
+  platform         String
+  accountId        String?
+  accountName      String?
+  platformUserId   String?
+  platformUsername String?
+  accessToken      String?
+  refreshToken     String?
+  expiresAt        DateTime?
+  isActive         Boolean   @default(true)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, platform])
 }
 
 model Contact {
-  id            String    @id @default(cuid())
-  userId        String
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  name          String
-  email         String?
-  avatar        String?
-  platformId    String    // ID on the platform (email, username, etc)
-  platform      String    // gmail, outlook, slack, linkedin, whatsapp, instagram
-
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  sentMessages     Message[] @relation("SentMessages")
-  receivedMessages Message[] @relation("ReceivedMessages")
+  id               String             @id @default(cuid())
+  userId           String
+  name             String
+  email            String?
+  avatar           String?
+  platformId       String
+  platform         String
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  user             User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   importance       ContactImportance?
+  sentMessages     Message[]          @relation("SentMessages")
+  receivedMessages Message[]          @relation("ReceivedMessages")
 
   @@unique([userId, platformId, platform])
 }
 
 model Message {
-  id            String    @id @default(cuid())
-  userId        String
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  conversationId String?
-  platform      String    // gmail, outlook, slack, linkedin, whatsapp, instagram
-  platformMessageId String? // original message ID from platform
-  externalId    String?   // Alternative external ID
-  threadId      String?   // Thread/conversation ID
-
-  fromContactId String?
-  fromContact   Contact?   @relation("SentMessages", fields: [fromContactId], references: [id])
-
-  toContactId   String?
-  toContact     Contact?   @relation("ReceivedMessages", fields: [toContactId], references: [id])
-
-  // Simple fields for quick integration
-  from          String?   // Email address
-  fromName      String?   // Display name
-  to            String?   // Email address
-
-  subject       String?
-  body          String
-  snippet       String?   // short preview
-
-  isRead        Boolean   @default(false)
-  priority      Int       @default(0) // AI-generated priority score (0-100)
-  sentiment     String?   // positive, neutral, negative
-  category      String?   // AI-generated category
-
-  attachments   String?   // JSON array of attachment URLs
-  metadata      String?   // JSON metadata from platform
-
-  receivedAt    DateTime  @default(now()) // When message was received
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  embedding     MessageEmbedding?
+  id                String            @id @default(cuid())
+  userId            String
+  conversationId    String?
+  platform          String
+  platformMessageId String?
+  externalId        String?
+  threadId          String?
+  fromContactId     String?
+  toContactId       String?
+  from              String?
+  fromName          String?
+  to                String?
+  subject           String?
+  body              String
+  snippet           String?
+  isRead            Boolean           @default(false)
+  priority          Int               @default(0)
+  sentiment         String?
+  category          String?
+  attachments       String?
+  metadata          String?
+  receivedAt        DateTime          @default(now())
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  fromContact       Contact?          @relation("SentMessages", fields: [fromContactId], references: [id])
+  toContact         Contact?          @relation("ReceivedMessages", fields: [toContactId], references: [id])
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  embedding         MessageEmbedding?
 
   @@index([userId, platform])
   @@index([userId, priority])
@@ -117,166 +98,134 @@ model Message {
 }
 
 model UserPreference {
-  id            String    @id @default(cuid())
-  userId        String    @unique
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  writingStyle  String?   // AI-learned writing style
-  priorities    String?   // JSON: user's priority preferences
-  autoReply     Boolean   @default(false)
-
-  // Enhanced preference learning
-  preferredResponseTime String?  // "morning", "afternoon", "evening"
-  communicationStyle   String?   // "formal", "casual", "brief"
-  keywordImportance    String?   // JSON: {"urgent": 0.9, "contract": 0.85}
-  senderPreferences    String?   // JSON: {contactId: weight}
-  platformPreferences  String?   // JSON: {"email": 0.7, "slack": 0.9}
-
-  samplesAnalyzed      Int       @default(0)
-  lastLearningRun      DateTime?
-  learningVersion      Int       @default(1)
-
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id                    String    @id @default(cuid())
+  userId                String    @unique
+  writingStyle          String?
+  priorities            String?
+  autoReply             Boolean   @default(false)
+  preferredResponseTime String?
+  communicationStyle    String?
+  keywordImportance     String?
+  senderPreferences     String?
+  platformPreferences   String?
+  samplesAnalyzed       Int       @default(0)
+  lastLearningRun       DateTime?
+  learningVersion       Int       @default(1)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-// User goals and priorities
 model UserGoal {
-  id            String    @id @default(cuid())
+  id            String   @id @default(cuid())
   userId        String
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  goal          String    // "Close Q1 sales deals"
-  category      String    // "work", "personal", "learning"
-  priority      Int       @default(5) // 1-10
-  status        String    @default("active") // active, achieved, abandoned
-  confidence    Float     @default(0.5) // AI confidence in goal extraction
-
-  extractedFrom String?   // JSON array of message IDs
-  keywords      String?   // JSON array: ["sales", "Q1", "deals"]
-
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  goal          String
+  category      String
+  priority      Int      @default(5)
+  status        String   @default("active")
+  confidence    Float    @default(0.5)
+  extractedFrom String?
+  keywords      String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, status])
   @@index([userId, priority])
 }
 
-// Conversation topics and streams
 model ConversationTopic {
-  id              String    @id @default(cuid())
-  userId          String
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  name            String    // "Project Alpha Launch"
-  description     String?   // AI-generated topic summary
-  category        String    // "project", "relationship", "transaction"
-  importance      Int       @default(5) // 1-10, learned over time
-
-  messageIds      String?   // JSON array of related message IDs
-  participantIds  String?   // JSON array of contact IDs
-  platforms       String?   // JSON array of platforms involved
-
-  lastActivityAt  DateTime
-  firstSeenAt     DateTime  @default(now())
-  messageCount    Int       @default(0)
-
-  embedding       String?   // JSON: [0.123, -0.456, ...] for similarity
+  id             String   @id @default(cuid())
+  userId         String
+  name           String
+  description    String?
+  category       String
+  importance     Int      @default(5)
+  messageIds     String?
+  participantIds String?
+  platforms      String?
+  lastActivityAt DateTime
+  firstSeenAt    DateTime @default(now())
+  messageCount   Int      @default(0)
+  embedding      String?
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, lastActivityAt])
   @@index([userId, importance])
 }
 
-// Important contacts (learned)
 model ContactImportance {
-  id              String    @id @default(cuid())
-  userId          String
-  contactId       String    @unique
-  contact         Contact   @relation(fields: [contactId], references: [id], onDelete: Cascade)
-
-  importanceScore Float     @default(5.0) // 0-10, learned
-  responseRate    Float     @default(0.0) // % of messages user responds to
-  avgResponseTime Int?      // seconds
-
-  interactionCount Int      @default(0)
-  lastInteraction DateTime?
-
-  tags            String?   // JSON: ["client", "urgent", "manager"]
+  id               String    @id @default(cuid())
+  userId           String
+  contactId        String    @unique
+  importanceScore  Float     @default(5.0)
+  responseRate     Float     @default(0.0)
+  avgResponseTime  Int?
+  interactionCount Int       @default(0)
+  lastInteraction  DateTime?
+  tags             String?
+  contact          Contact   @relation(fields: [contactId], references: [id], onDelete: Cascade)
 
   @@unique([userId, contactId])
   @@index([userId, importanceScore])
 }
 
-// To-do items extracted from messages
 model TodoItem {
-  id          String    @id @default(cuid())
-  userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  title       String
-  description String?
-  dueDate     DateTime?
-  priority    Int       @default(5) // 1-10
-  status      String    @default("pending") // pending, completed, dismissed
-
-  extractedFrom String?  // message ID (optional for manual todos)
-  messageSnippet String? // context snippet (optional for manual todos)
-  confidence  Float     @default(0.5)
-
-  completedAt DateTime?
-  createdAt   DateTime  @default(now())
+  id             String    @id @default(cuid())
+  userId         String
+  title          String
+  description    String?
+  dueDate        DateTime?
+  priority       Int       @default(5)
+  status         String    @default("pending")
+  extractedFrom  String?
+  messageSnippet String?
+  confidence     Float     @default(0.5)
+  completedAt    DateTime?
+  createdAt      DateTime  @default(now())
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, status, dueDate])
   @@index([userId, status])
 }
 
-// User interaction events (for learning)
 model UserInteraction {
-  id          String    @id @default(cuid())
-  userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  eventType   String    // "message_read", "message_replied", "priority_override"
-  messageId   String?
-  contactId   String?
-
-  metadata    String?   // JSON: additional context
-  timestamp   DateTime  @default(now())
+  id        String   @id @default(cuid())
+  userId    String
+  eventType String
+  messageId String?
+  contactId String?
+  metadata  String?
+  timestamp DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, eventType, timestamp])
   @@index([userId, timestamp])
 }
 
-// Daily summaries
 model DailySummary {
-  id              String    @id @default(cuid())
-  userId          String
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  date            DateTime  // Date for this summary
-  summary         String    // AI-generated summary
-
-  topMessages     String?   // JSON: [message IDs]
-  topTopics       String?   // JSON: [topic IDs]
-  actionItems     String?   // JSON: [todo IDs]
-
-  messageCount    Int
-  unreadCount     Int
-  priorityCount   Int       // high priority messages
-
-  generatedAt     DateTime  @default(now())
+  id            String   @id @default(cuid())
+  userId        String
+  date          DateTime
+  summary       String
+  topMessages   String?
+  topTopics     String?
+  actionItems   String?
+  messageCount  Int
+  unreadCount   Int
+  priorityCount Int
+  generatedAt   DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, date])
   @@index([userId, date])
 }
 
-// Message embeddings for similarity search
 model MessageEmbedding {
-  id          String    @id @default(cuid())
-  messageId   String    @unique
-  message     Message   @relation(fields: [messageId], references: [id], onDelete: Cascade)
-
-  embedding   String    // JSON array: [0.123, -0.456, ...] (1536 dims)
+  id        String  @id @default(cuid())
+  messageId String  @unique
+  embedding String
+  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
 
   @@index([messageId])
 }

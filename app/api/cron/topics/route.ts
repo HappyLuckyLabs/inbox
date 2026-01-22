@@ -100,7 +100,7 @@ async function extractTopicsForUser(userId: string): Promise<number> {
 
     const topic = await extractConversationTopic(messagesForAnalysis);
 
-    if (topic && topic.confidence > 0.6) {
+    if (topic && topic.importance > 5) {
       // Check if topic already exists
       const existingTopic = await prisma.conversationTopic.findFirst({
         where: {

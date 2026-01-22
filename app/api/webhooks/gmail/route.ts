@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { fetchSingleGmailMessage, parseGmailMessage } from '@/lib/gmail/gmail-client';
+import { fetchGmailMessages, parseGmailMessage } from '@/lib/gmail/gmail-client';
 import { prisma } from '@/lib/prisma';
 import { processNewMessage } from '@/lib/processing/message-processor';
 
