@@ -41,8 +41,9 @@ prisma/prisma/*.db-journal
 
 # oauth tokens
 tokens/
-*.json
+tokens/*.json
 
 # credentials
 credentials.json
-token.json.env.production
+token.json
+.env.production
