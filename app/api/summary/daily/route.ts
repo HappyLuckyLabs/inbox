@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
 
     // Format data for summary generation
     const messageSummaries = messages.map(m => ({
-      from: m.fromContact.name,
+      from: m.fromContact?.name || m.from || 'Unknown',
       subject: m.subject || undefined,
       snippet: m.snippet || m.body.substring(0, 100),
       priority: m.priority,
