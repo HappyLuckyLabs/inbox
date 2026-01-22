@@ -9,6 +9,12 @@ const nextConfig = {
       },
     ],
   },
+  // Vercel deployment configuration
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '2mb',
+    },
+  },
 }
 
 module.exports = nextConfig
