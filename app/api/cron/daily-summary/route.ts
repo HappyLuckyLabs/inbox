@@ -116,6 +116,7 @@ async function generateDailySummaryForUser(userId: string, userName: string): Pr
   const messageSummaries = messages.slice(0, 20).map(m => ({
     from: m.fromContact?.name || m.from || 'Unknown',
     subject: m.subject || undefined,
+    snippet: m.snippet || m.body.substring(0, 100),
     body: m.body,
     priority: m.priority,
   }));
