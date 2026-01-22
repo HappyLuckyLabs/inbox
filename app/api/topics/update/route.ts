@@ -16,10 +16,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Update topic
+    // Update topic - just mark as active by updating lastActivityAt
     const updatedTopic = await prisma.conversationTopic.update({
       where: { id: topicId },
-      data: { isActive },
+      data: { lastActivityAt: new Date() },
     });
 
     return NextResponse.json({
