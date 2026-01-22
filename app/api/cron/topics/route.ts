@@ -105,8 +105,7 @@ async function extractTopicsForUser(userId: string): Promise<number> {
       const existingTopic = await prisma.conversationTopic.findFirst({
         where: {
           userId,
-          topic: topic.topic,
-          isActive: true,
+          name: topic.name,
         },
       });
 
@@ -115,8 +114,8 @@ async function extractTopicsForUser(userId: string): Promise<number> {
         await prisma.conversationTopic.update({
           where: { id: existingTopic.id },
           data: {
-            lastMentioned: new Date(),
-            importance: Math.max(existingTopic.importance, topic.importance),
+            lastActivityAt: new Date(),
+            importance: Math.max(existingTopic.importance, topic.importance || 5),
             messageCount: { increment: messages.length },
           },
         });
@@ -125,16 +124,13 @@ async function extractTopicsForUser(userId: string): Promise<number> {
         await prisma.conversationTopic.create({
           data: {
             userId,
-            topic: topic.topic,
-            category: topic.category,
-            importance: topic.importance,
-            relatedContactIds: JSON.stringify([contactId]),
-            keywords: JSON.stringify(topic.keywords),
-            actionItems: JSON.stringify(topic.actionItems),
-            firstMentioned: new Date(),
-            lastMentioned: new Date(),
+            name: topic.name,
+            description: topic.description,
+            category: topic.category || 'general',
+            importance: topic.importance || 5,
+            participantIds: JSON.stringify([contactId]),
+            lastActivityAt: new Date(),
             messageCount: messages.length,
-            isActive: true,
           },
         });
 
