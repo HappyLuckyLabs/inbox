@@ -145,7 +145,8 @@ async function generateDailySummaryForUser(userId: string, userName: string): Pr
       date: today,
       summary,
       messageCount: messages.length,
-      highPriorityCount: messages.filter(m => m.priority > 70).length,
+      unreadCount: messages.filter(m => !m.isRead).length,
+      priorityCount: messages.filter(m => m.priority > 70).length,
     },
   });
 
