@@ -79,10 +79,11 @@ async function extractTopicsForUser(userId: string): Promise<number> {
   // Group messages by contact
   const messagesByContact: Record<string, any[]> = {};
   recentMessages.forEach(msg => {
-    if (!messagesByContact[msg.fromContactId]) {
-      messagesByContact[msg.fromContactId] = [];
+    const contactId = msg.fromContactId || 'unknown';
+    if (!messagesByContact[contactId]) {
+      messagesByContact[contactId] = [];
     }
-    messagesByContact[msg.fromContactId].push(msg);
+    messagesByContact[contactId].push(msg);
   });
 
   let topicsExtracted = 0;
@@ -92,7 +93,7 @@ async function extractTopicsForUser(userId: string): Promise<number> {
     if (messages.length < 2) continue; // Need multiple messages for conversation
 
     const messagesForAnalysis = messages.map(m => ({
-      from: m.fromContact.name,
+      from: m.fromContact?.name || m.from || 'Unknown',
       body: m.body,
       subject: m.subject,
     }));
