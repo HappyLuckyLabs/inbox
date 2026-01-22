@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Warm Neutral Palette - Kinso Design System */
+    --background: 30 15% 98%;
+    --foreground: 25 15% 20%;
+    --card: 0 0% 100%;
+    --card-foreground: 25 15% 20%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 25 15% 20%;
+    --primary: 25 20% 25%;
+    --primary-foreground: 30 15% 98%;
+    --secondary: 30 18% 96%;
+    --secondary-foreground: 25 15% 20%;
+    --muted: 30 18% 96%;
+    --muted-foreground: 25 10% 55%;
+    --accent: 10 70% 65%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 70% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 30 12% 90%;
+    --input: 30 12% 90%;
+    --ring: 10 70% 65%;
+    --radius: 0.75rem;
+
+    /* Kinso Brand Colors */
+    --coral: 10 70% 65%;
+    --coral-light: 10 80% 85%;
+    --coral-dark: 10 65% 50%;
+    --warm-gray: 30 8% 45%;
+    --warm-gray-light: 30 10% 92%;
+    --warm-gray-dark: 30 12% 30%;
+    --sage: 150 15% 60%;
+    --sage-light: 150 20% 90%;
+    --lavender: 250 30% 75%;
+    --lavender-light: 250 35% 92%;
+    --peach: 25 75% 80%;
+    --peach-light: 25 80% 92%;
+  }
+
+  .dark {
+    --background: 25 20% 12%;
+    --foreground: 30 15% 95%;
+    --card: 25 18% 15%;
+    --card-foreground: 30 15% 95%;
+    --popover: 25 18% 15%;
+    --popover-foreground: 30 15% 95%;
+    --primary: 30 15% 95%;
+    --primary-foreground: 25 20% 15%;
+    --secondary: 25 15% 20%;
+    --secondary-foreground: 30 15% 95%;
+    --muted: 25 15% 20%;
+    --muted-foreground: 30 10% 65%;
+    --accent: 10 70% 60%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 65% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 25 15% 22%;
+    --input: 25 15% 22%;
+    --ring: 10 70% 60%;
+
+    /* Dark Mode Kinso Colors */
+    --coral: 10 70% 60%;
+    --coral-light: 10 50% 30%;
+    --coral-dark: 10 65% 45%;
+    --warm-gray: 30 8% 55%;
+    --warm-gray-light: 30 8% 25%;
+    --warm-gray-dark: 30 10% 70%;
+    --sage: 150 15% 50%;
+    --sage-light: 150 12% 25%;
+    --lavender: 250 25% 65%;
+    --lavender-light: 250 20% 25%;
+    --peach: 25 60% 60%;
+    --peach-light: 25 50% 25%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
