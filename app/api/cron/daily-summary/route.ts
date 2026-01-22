@@ -97,8 +97,7 @@ async function generateDailySummaryForUser(userId: string, userName: string): Pr
   const topics = await prisma.conversationTopic.findMany({
     where: {
       userId,
-      lastMentioned: { gte: today },
-      isActive: true,
+      lastActivityAt: { gte: today },
     },
     orderBy: { importance: 'desc' },
   });
