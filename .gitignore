@@ -45,4 +45,4 @@ tokens/
 
 # credentials
 credentials.json
-token.json
+token.json.env.production
