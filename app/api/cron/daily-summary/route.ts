@@ -122,8 +122,7 @@ async function generateDailySummaryForUser(userId: string, userName: string): Pr
   }));
 
   const topicSummaries = topics.map(t => ({
-    topic: t.name,
-    importance: t.importance,
+    name: t.name,
     messageCount: t.messageCount,
   }));
 
